@@ -1,5 +1,12 @@
 #include "disasm_header.h"
 
+#define DEF_CMD(name, num, argasm, argcp, argdis)   \
+    case CMD_##name:                                \
+        PRINTF_TXT("%s ", #name)                    \
+        argdis                                      \
+        break;
+
+
 int main()
 {
     FILE* transfile     = fopen("translated_in.txt", "rb");
@@ -55,127 +62,21 @@ int disassemble(FILE* transfile, FILE* new_word_file, const int file_size)
 
     while (ip < file_size)
     {   
-        int comand = (int)code[ip];
-        ++ip;
-        double under_comand;
+        int comand = (int) code[ip++];
+        int under_comand;
 
         switch(comand) 
         {
+            #include "../cmd_def.h"
 
-            case CMD_PUSH:
-            
-                PRINTF_TXT("%s ", "push")
-                PRINTF_TXT("%lg\n", code[ip++])
-                break;
-            
-            case CMD_REGPUSH:
-            
-                PRINTF_TXT("%s ", "push")
-
-                under_comand = code[ip++];
-
-                if (under_comand == RAX) {
-                    PRINTF_TXT("%s\n", "RAX")
-                }
-                else if (under_comand == RBX) {
-                    PRINTF_TXT("%s\n", "RBX")
-                }
-                else if (under_comand == RCX) {
-                    PRINTF_TXT("%s\n", "RCX")
-                }
-                else if (under_comand == RDX) {
-                    PRINTF_TXT("%s\n", "RDX")
-                }
-                else
-                    ERROR(-1);
-                break;
-            case CMD_MOV:
-
-                PRINTF_TXT("%s ", "mov")
-                under_comand = code[ip++];
-
-                if (under_comand == RAX) {
-                    PRINTF_TXT("%s ", "RAX")
-                }
-                else if (under_comand == RBX) {
-                    PRINTF_TXT("%s ", "RBX")
-                }
-                else if (under_comand == RCX) {
-                    PRINTF_TXT("%s ", "RCX")
-                }
-                else if (under_comand == RDX) {
-                    PRINTF_TXT("%s ", "RDX")
-                }
-                else
-                    ERROR(-1);
-
-                PRINTF_TXT("%lg\n", code[ip++])
-                break;
-            case CMD_POP:
-
-                PRINTF_TXT("%s ", "pop")
-                under_comand = code[ip++];
-
-                if (under_comand == RAX) {
-                    PRINTF_TXT("%s\n", "RAX")
-                }
-                else if (under_comand == RBX) {
-                    PRINTF_TXT("%s\n", "RBX")
-                }
-                else if (under_comand == RCX) {
-                    PRINTF_TXT("%s\n", "RCX")
-                }
-                else if (under_comand == RDX) {
-                    PRINTF_TXT("%s\n", "RDX")
-                }
-                else
-                    ERROR(-1);
-                    
-                break;
-            case CMD_ZERO_POP:
-            
-                PRINTF_TXT("%s\n", "pop")
-                break;
-
-            case CMD_OUT:
-            
-                PRINTF_TXT("%s\n", "out")
-                break;
-            case CMD_ADD:
-            
-                PRINTF_TXT("%s\n", "add")
-                break;
-            case CMD_SUB:
-            
-                PRINTF_TXT("%s\n", "sub")
-                break;
-            case CMD_MUL:
-            
-                PRINTF_TXT("%s\n", "mul")
-                break;
-            case CMD_DIV:
-            
-                PRINTF_TXT("%s\n", "divh")
-                break;
-            case CMD_SQRT:
-            
-                PRINTF_TXT("%s\n", "sqrt")
-                break;
-            case CMD_HLT:
-            
-                PRINTF_TXT("%s\n", "hlt")
-                return 0;
-            case CMD_IN:
-            
-                PRINTF_TXT("%s\n", "in") 
-                break;
-            case CMD_MINUS:
-            
-                PRINTF_TXT("%s\n", "minus")
-                break;
-            default:    ERROR(-1)
+            default:
+                free(code);
+                ERROR(0)
         }
     }
     
+    free(code);
     ERROR(0)
 }
+
+#undef DEF_CMD

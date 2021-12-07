@@ -1,6 +1,4 @@
-DEF_CMD(push, 1, 
-{          
-            buffer[ip++] = CMD_push;
+DEF_CMD(push, 1,
             double a = 0;
         
             if (fscanf(inputfile, "%lg", &a) != 1)
@@ -10,14 +8,14 @@ DEF_CMD(push, 1,
             
             buffer[ip++] = a;
             
-},
+,
             PUSH(code[ip++]);
+,
+            PRINTF_TXT("%lg\n", code[ip++])
 )
 
 
-DEF_CMD(regpush, 11, 
-{
-            buffer[ip++] = CMD_regpush;
+DEF_CMD(regpush, 11,
             int ptr = -1; char reg_name[3];
 
             if (fscanf(inputfile, "%s", reg_name) != 1)
@@ -43,7 +41,7 @@ DEF_CMD(regpush, 11,
             
             buffer[ip++] = ptr;    
 
-},
+,
             constant = code[ip++];
 
             switch (constant)
@@ -70,11 +68,26 @@ DEF_CMD(regpush, 11,
                     ERROR(-1)
                     break;
             };
+,
+            under_comand = code[ip++];
+
+            if (under_comand == RAX) {
+                PRINTF_TXT("%s\n", "RAX")
+            }
+            else if (under_comand == RBX) {
+                PRINTF_TXT("%s\n", "RBX")
+            }
+            else if (under_comand == RCX) {
+                PRINTF_TXT("%s\n", "RCX")
+            }
+            else if (under_comand == RDX) {
+                PRINTF_TXT("%s\n", "RDX")
+            }
+            else
+                ERROR(-1);
 )
 
 DEF_CMD(regpop, 3,
-{
-            buffer[ip++] = CMD_regpop;
             int ptr = -1;
             char reg_name[14];
             
@@ -103,7 +116,7 @@ DEF_CMD(regpop, 3,
             buffer[ip++] = ptr;
            
 
-},
+,
             constant = (int) code[ip++];
 
             switch (constant)
@@ -130,81 +143,97 @@ DEF_CMD(regpop, 3,
                     ERROR(-1)
                     break;
             };
+,
+            under_comand = code[ip++];
+
+            if (under_comand == RAX) {
+                PRINTF_TXT("%s\n", "RAX")
+            }
+            else if (under_comand == RBX) {
+                PRINTF_TXT("%s\n", "RBX")
+            }
+            else if (under_comand == RCX) {
+                PRINTF_TXT("%s\n", "RCX")
+            }
+            else if (under_comand == RDX) {
+                PRINTF_TXT("%s\n", "RDX")
+            }
+            else
+                ERROR(-1);
 )
 
 DEF_CMD(out, 5,
-{
-            buffer[ip++] = CMD_out;
-},
+,
             fprintf(outputfile, "%lg\n", POP);
+, 
+            fprintf(new_word_file, "\n");
 )
 
 DEF_CMD(add, 6,
-{
-            buffer[ip++] = CMD_add;
-},
+,
             PUSH(POP+POP);
+, 
+            fprintf(new_word_file, "\n");
 )
 
 DEF_CMD(sub, 4, 
-{
-            buffer[ip++] = CMD_sub;
-},
+,
             PUSH(POP - POP);
+, 
+            fprintf(new_word_file, "\n");
 )
 
 DEF_CMD(mul, 2,
-{
-            buffer[ip++] = CMD_mul;
-},
+,
             PUSH(POP * POP);
+, 
+            fprintf(new_word_file, "\n");
 )
 
 DEF_CMD(div, 7, 
-{
-            buffer[ip++] = CMD_div;
-},
+,
             a = POP;  b = POP;
 
             if (b == 0)    ERROR(-1)
 
             PUSH(a / b);
+, 
+            fprintf(new_word_file, "\n");
 )
 
 DEF_CMD(sqrt, 8, 
-{
-            buffer[ip++] = CMD_sqrt;
-},
+,
             a = POP;
             if (a < 0)    ERROR(-1)      
             PUSH(sqrt(a));
+, 
+            fprintf(new_word_file, "\n");
 )
 
 DEF_CMD(hlt, -1, 
-{
-            buffer[ip++] = CMD_hlt;
-},
+,
             ERROR(0)
+, 
+            fprintf(new_word_file, "\n");
 )
 
 DEF_CMD(in, 9, 
-{
-            buffer[ip++] = CMD_in; 
-},
+,
             if (scanf("%lg", &a) == 0)    ERROR(-1)
 
-                PUSH(a);
+            PUSH(a);
+, 
+            fprintf(new_word_file, "\n");
 )
+
 DEF_CMD(minus, 10, 
-{
-            buffer[ip++] = CMD_minus;
-},
+,
             PUSH(-POP);
+, 
+            fprintf(new_word_file, "\n");
 )
 
 DEF_CMD(mov, 12, 
-{
-            buffer[ip++] = CMD_mov;
 
             int ptr = -1; double a = 0;
             char reg_name[3];
@@ -235,7 +264,7 @@ DEF_CMD(mov, 12,
             }
             buffer[ip++] = a;
             
-},
+,
             constant = code[ip++];
 
                 switch (constant)
@@ -262,13 +291,51 @@ DEF_CMD(mov, 12,
                         ERROR(-1)
                         break;
                 };
+,
+                under_comand = (int) code[ip++];
+                
+                switch(under_comand)
+                {
+                    case RAX:
+                        PRINTF_TXT("%s ", "RAX")
+                        break;
+
+                    case RBX:
+                        PRINTF_TXT("%s ", "RAX")
+                        break;
+
+                    case RCX:
+                        PRINTF_TXT("%s ", "RAX")
+                        break;
+
+                    case RDX:
+                        PRINTF_TXT("%s ", "RAX")
+                        break;
+                    
+                    default:
+                        ERROR(-1)
+                        break;
+
+                }
+
+                PRINTF_TXT("%lg\n", code[ip++])
 )
 
 DEF_CMD(pop, 13,
-{
-            buffer[ip++] = CMD_pop;
-},
+,
             POP;
+, 
+            fprintf(new_word_file, "\n");
 )
+
+/*DEF_CMD(jae, 14,
+
+            if (fscanf(inputfile, "%s", buf) != 1)
+                return -1;
+            
+
+,
+,
+)*/
 
 

@@ -1,7 +1,8 @@
 #include "proc_header.h"
-#define DEF_CMD(name, num, argasm, argcp)\
-    case CMD_##name:\
-        argcp\
+
+#define DEF_CMD(name, num, argasm, argcp, ...)\
+    case CMD_##name:                          \
+        argcp                                 \
         break;
 
 
@@ -21,7 +22,7 @@ int Execute(FILE* outputfile, FILE* transfile, int file_size)
     int comand = 0, ip = 0;
     Stack stk = {};
     StackCtor(&stk, BASE_STK_SIZE);
-    struct proces registers= {};
+    struct proces registers = {};
 
     if (transfile == NULL || outputfile == NULL)
         return -1;
@@ -53,14 +54,17 @@ int Execute(FILE* outputfile, FILE* transfile, int file_size)
             #include "..//cmd_def.h"
             
             default:
+                free(code);
                 ERROR(-1)
         };
     
     }
     
+    free(code);
     ERROR(0)
 }
 
+#undef DEF_CMD
 
 /*case CMD_PUSH:
 

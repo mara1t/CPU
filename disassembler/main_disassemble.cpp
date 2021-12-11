@@ -3,7 +3,14 @@
 #define DEF_CMD(name, num, argasm, argcp, argdis)   \
     case CMD_##name:                                \
         PRINTF_TXT("%s ", #name)                    \
-        argdis                                      \
+                                             \
+        break;
+
+#define DEF_JMP(name, num, argasm, argcp, argdis)   \
+    case CMD_##name:                                \
+        PRINTF_TXT("%s ", #name)                    \
+        PRINTF_TXT("%lg\n", code[ip++])                    \
+                                              \
         break;
 
 
@@ -27,6 +34,7 @@ int main()
             printf("ERROR in disassembler\n");
         }
     }
+    $$$
     fclose(transfile);
     fclose(new_word_file);
     return 0;
@@ -47,14 +55,14 @@ int File_size (FILE* og) {
 int disassemble(FILE* transfile, FILE* new_word_file, const int file_size)
 {
     int ip = 0;
-
+    printf("filesize=%d\n", file_size);
 
     if (transfile == NULL || new_word_file == NULL)
         return -1;
     
-    double* code = (double*) calloc(file_size, sizeof(double));
+    double* code = (double*) calloc(file_size / sizeof(double), sizeof(double));
 
-    if (fread(code, sizeof(double), file_size, transfile) == 0)
+    if (fread(code, sizeof(double), file_size / sizeof(double), transfile) == 0)
     {
         printf("NOT WRITTEN FILE\n");
         ERROR(-1)
@@ -70,13 +78,136 @@ int disassemble(FILE* transfile, FILE* new_word_file, const int file_size)
             #include "../cmd_def.h"
 
             default:
-                free(code);
                 ERROR(0)
         }
     }
     
-    free(code);
+    
     ERROR(0)
 }
 
+#undef DEF_JMP
 #undef DEF_CMD
+
+/*case CMD_PUSH:
+            
+                PRINTF_TXT("%s ", "push")
+                PRINTF_TXT("%lg\n", code[ip++])
+                break;
+            
+            case CMD_REGPUSH:
+            
+                PRINTF_TXT("%s ", "regpush")
+
+                under_comand = code[ip++];
+
+                if (under_comand == RAX) {
+                    PRINTF_TXT("%s\n", "RAX")
+                }
+                else if (under_comand == RBX) {
+                    PRINTF_TXT("%s\n", "RBX")
+                }
+                else if (under_comand == RCX) {
+                    PRINTF_TXT("%s\n", "RCX")
+                }
+                else if (under_comand == RDX) {
+                    PRINTF_TXT("%s\n", "RDX")
+                }
+                else
+                    ERROR(-1);
+                break;
+            case CMD_MOV:
+
+                PRINTF_TXT("%s ", "mov")
+                under_comand = code[ip++];
+                
+                switch(under_comand)
+                {
+                    case RAX:
+                        PRINTF_TXT("%s ", "RAX")
+                        break;
+
+                    case RBX:
+                        PRINTF_TXT("%s ", "RAX")
+                        break;
+
+                    case RCX:
+                        PRINTF_TXT("%s ", "RAX")
+                        break;
+
+                    case RDX:
+                        PRINTF_TXT("%s ", "RAX")
+                        break;
+                    
+                    default:
+                        ERROR(-1)
+                        break;
+
+                }
+
+                PRINTF_TXT("%lg\n", code[ip++])
+                break;
+            case CMD_POP:
+
+                PRINTF_TXT("%s ", "pop")
+                under_comand = code[ip++];
+
+                if (under_comand == RAX) {
+                    PRINTF_TXT("%s\n", "RAX")
+                }
+                else if (under_comand == RBX) {
+                    PRINTF_TXT("%s\n", "RBX")
+                }
+                else if (under_comand == RCX) {
+                    PRINTF_TXT("%s\n", "RCX")
+                }
+                else if (under_comand == RDX) {
+                    PRINTF_TXT("%s\n", "RDX")
+                }
+                else
+                    ERROR(-1);
+                    
+                break;
+            case CMD_ZERO_POP:
+            
+                PRINTF_TXT("%s\n", "pop")
+                break;
+
+            case CMD_OUT:
+            
+                PRINTF_TXT("%s\n", "out")
+                break;
+            case CMD_ADD:
+            
+                PRINTF_TXT("%s\n", "add")
+                break;
+            case CMD_SUB:
+            
+                PRINTF_TXT("%s\n", "sub")
+                break;
+            case CMD_MUL:
+            
+                PRINTF_TXT("%s\n", "mul")
+                break;
+            case CMD_DIV:
+            
+                PRINTF_TXT("%s\n", "divh")
+                break;
+            case CMD_SQRT:
+            
+                PRINTF_TXT("%s\n", "sqrt")
+                break;
+            case CMD_HLT:
+            
+                PRINTF_TXT("%s\n", "hlt")
+                return 0;
+            case CMD_IN:
+            
+                PRINTF_TXT("%s\n", "in") 
+                break;
+            case CMD_MINUS:
+            
+                PRINTF_TXT("%s\n", "minus")
+                break;
+            default:    ERROR(-1)
+        }*/

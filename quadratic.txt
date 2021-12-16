@@ -1,0 +1,61 @@
+in
+pop RAX
+in
+pop RBX
+in
+pop RCX
+push 0
+push RAX
+je :a_eq_zero
+push RAX
+push RCX
+push 4
+mul
+mul
+push RBX
+push RBX
+mul
+sub
+pop RDX
+push RDX
+push 0
+ja :dis_less_zero
+push RDX
+sqrt
+pop RDX
+push 2
+push RAX
+mul
+push RDX
+push RBX
+push 0
+sub
+add
+div
+out
+push 2
+push RAX
+mul
+push RDX
+push RBX
+push 0
+sub
+sub
+div
+out
+hlt
+:a_eq_zero
+push RBX
+push 0
+je :b_eq_zero
+push RBX
+push RCX
+push 0
+sub
+div
+out
+hlt
+:b_eq_zero
+hlt
+:dis_less_zero
+hlt

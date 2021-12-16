@@ -1,4 +1,4 @@
-#include "proc_header.h"
+#include "proc.h"
 
 int main()
 {
@@ -15,7 +15,6 @@ int main()
         if (Execute (outputfile, transfile, file_size) != 0)
             printf("ERROR in Executer\n");
     }
-
 
     fclose(transfile);
     fclose(outputfile);

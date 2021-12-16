@@ -1,0 +1,19 @@
+in
+pop RAX
+push RAX
+pop RBX
+:label
+push -1
+push RBX
+add
+pop RBX
+push RBX
+push RAX
+mul
+pop RAX
+push 1
+push RBX
+ja :label
+push RAX
+out
+hlt

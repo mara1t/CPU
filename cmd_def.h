@@ -1,13 +1,100 @@
+DEF_FUN(call, 23,
+            FUNC_PUSH(ip + 1);
+)
+
+DEF_CMD(ret, 24,
+            buffer[ip++] = CMD_ret;
+,
+            ip = (int) FUNC_POP;  
+,
+            fprintf(new_word_file, "\n");
+)
+
+DEF_JMP(jmp, 14, 0, ==)
+
+DEF_JMP(ja, 15, 1, >)
+
+DEF_JMP(jae, 16, 1, >=)
+
+DEF_JMP(jb, 17, 1, <)
+
+DEF_JMP(jbe, 18, 1, <=)
+
+DEF_JMP(je, 19, 1, ==)
+
+DEF_JMP(jne, 20, 1, !=)
+
+
+
 DEF_CMD(push, 1,
+            
             double a = 0;
-        
-            if (fscanf(inputfile, "%lg", &a) != 1)
+            int symb = 0;
+            int ptr = -1;
+            char reg_name[4];
+            char *ptr_open;
+            if (sscanf(each_str[str_num].str, "%*s %lg", &a) == 1)
             {
-                return -1;          
+                buffer[ip++] = CMD_push; 
+                CHECK_ERR
+                buffer[ip++] = a;
             }
-            
-            buffer[ip++] = a;
-            
+            else if ((ptr_open = strchr(each_str[str_num].str, '[')) != NULL)
+            { 
+                int ram_ip = 0;
+                char *ptr_close;
+
+                if ((ptr_close = strchr(each_str[str_num].str, ']')) != NULL)
+                {
+                    buffer[ip++] = CMD_oppush;
+                    CHECK_ERR
+                    if (pass == 1)
+                    {
+                        *ptr_open = *ptr_close = ' ';
+                        if (sscanf(each_str[str_num].str, "%*s %d", &ram_ip) == 0)
+                        {
+                            ERROR(-1)
+                        }
+                        buffer[ip++] = ram_ip;
+                    }
+                    else
+                        buffer[ip++] = -1;
+                }
+                else 
+                {
+                    printf("ERROR IN OPPUSH");
+                    ERROR(-1)
+                }
+
+            }      
+            else if (sscanf(each_str[str_num].str, "%*s %s", reg_name) == 1)   
+            {
+                if (STR_EQUAL (reg_name, "RAX"))
+                    ptr = RAX;
+
+                else if (STR_EQUAL (reg_name, "RBX"))
+                    ptr = RBX;
+
+                else if (STR_EQUAL (reg_name, "RCX"))
+                    ptr = RCX;
+
+                else if (STR_EQUAL (reg_name, "RDX"))
+                    ptr = RDX;
+
+                else {
+                    ptr = -1;
+                    printf("ERROR IN REGPUSH\n");
+                    ERROR(-1)
+                }     
+                buffer[ip++] = CMD_regpush;
+                CHECK_ERR
+                buffer[ip++] = ptr;  
+            }
+            else
+            {
+                printf("ERROR IN PUSH\n");
+                ERROR(-1)
+            }
 ,
             PUSH(code[ip++]);
 ,
@@ -16,38 +103,14 @@ DEF_CMD(push, 1,
 
 
 DEF_CMD(regpush, 11,
-            int ptr = -1; char reg_name[3];
-
-            if (fscanf(inputfile, "%s", reg_name) != 1)
-                return -1;
-
-            if (STR_EQUAL (reg_name, "RAX"))
-                ptr = RAX;
-
-            else if (STR_EQUAL (reg_name, "RBX"))
-                ptr = RBX;
-
-            else if (STR_EQUAL (reg_name, "RCX"))
-                ptr = RCX;
-
-            else if (STR_EQUAL (reg_name, "RDX"))
-                ptr = RDX;
-
-            else {
-                
-                ptr = -1;
-                return -1;
-            }     
-            
-            buffer[ip++] = ptr;    
-
+            ERROR(-1)
 ,
             constant = code[ip++];
-
+            $$$
             switch (constant)
             {
                 case RAX:
-
+                    $$$
                     PUSH(registers.RX[0]);
                     break;
                 case RBX:
@@ -64,7 +127,7 @@ DEF_CMD(regpush, 11,
                     break;
                 default:
 
-                    printf("ERROR IN PUSH\n");
+                    printf("ERROR IN REGPUSH\n");
                     ERROR(-1)
                     break;
             };
@@ -84,38 +147,93 @@ DEF_CMD(regpush, 11,
                 PRINTF_TXT("%s\n", "RDX")
             }
             else
-                ERROR(-1);
+            {
+                printf("ERROR IN PUSH\n");
+                ERROR(-1)
+            }
 )
 
-DEF_CMD(regpop, 3,
-            int ptr = -1;
-            char reg_name[14];
-            
-            if (fscanf(inputfile, "%s", reg_name) != 1)
-                return -1;
-            
+DEF_CMD(oppush, 21,
+            ERROR(-1)
+,
+            PUSH(registers.RAM[(int)code[ip++]]);
+,
+            PRINTF_TXT("[%lg]\n", code[ip++])
+)
 
-            if (STR_EQUAL (reg_name, "RAX"))
+DEF_CMD(pop, 3,
+            char reg_name[4];
+            char *ptr_open;
+            int b = 0;
+            if ((ptr_open = strchr(each_str[str_num].str, '[')) != NULL)
+            { 
+                int ram_ip = 0;
+                char *ptr_close;
+                if ((ptr_close = strchr(each_str[str_num].str, ']')) != NULL)
+                {
+                    buffer[ip++] = CMD_oppop;
+                    CHECK_ERR
+                    if (pass == 1)
+                    {
+                        *ptr_open = ' ';
+                        *ptr_close = ' ';
+                        if (sscanf(each_str[str_num].str, "%*s %d", &ram_ip) == 0)
+                        {
+                            ERROR(-1)
+                        }
+                        buffer[ip++] = ram_ip;
+                    }
+                    else 
+                    {
+                        buffer[ip++] = -1;
+                    }                
+                }
+                else 
+                {
+                    printf("ERROR IN OPPUSH");
+                    ERROR(-1)
+                }
+                b = 1;
+
+            }
+            else if (sscanf(each_str[str_num].str, "%*s %s", reg_name))
+            {
+                int ptr = -1;
+                if (STR_EQUAL (reg_name, "RAX"))
                 ptr = RAX;
 
-            else if (STR_EQUAL (reg_name, "RBX"))
-                ptr = RBX;
+                else if (STR_EQUAL (reg_name, "RBX"))
+                    ptr = RBX;
 
-            else if (STR_EQUAL (reg_name, "RCX"))
-                ptr = RCX;
+                else if (STR_EQUAL (reg_name, "RCX"))
+                    ptr = RCX;
 
-            else if (STR_EQUAL (reg_name, "RDX"))
-                ptr = RDX;
+                else if (STR_EQUAL (reg_name, "RDX"))
+                    ptr = RDX;
 
-            else 
-            {
-                return -1;
-                
+                else 
+                {
+                    printf("ERROR IN REGPOP\n");
+                    ERROR(-1)
+                    
+                }
+                buffer[ip++] = CMD_regpop;
+                CHECK_ERR
+                buffer[ip++] = ptr;
+
             }
-            
-            buffer[ip++] = ptr;
-           
+            else 
+                buffer[ip++] = CMD_pop;
 
+,
+            POP;
+, 
+            fprintf(new_word_file, "\n");
+)
+
+
+DEF_CMD(regpop, 13,
+            ERROR(-1)
 ,
             constant = (int) code[ip++];
 
@@ -139,7 +257,7 @@ DEF_CMD(regpop, 3,
                     break;
                 default:
 
-                    printf("ERROR IN POP\n");
+                    printf("ERROR IN REGPOP\n");
                     ERROR(-1)
                     break;
             };
@@ -159,10 +277,22 @@ DEF_CMD(regpop, 3,
                 PRINTF_TXT("%s\n", "RDX")
             }
             else
-                ERROR(-1);
+            {
+                printf("ERROR IN REGPOP\n");
+                ERROR(-1)
+            }
+)
+
+DEF_CMD(oppop, 22,
+            ERROR(-1)
+,
+            registers.RAM[(int) code[ip++]] = POP;
+,
+            PRINTF_TXT("[%lg]\n", code[ip++])
 )
 
 DEF_CMD(out, 5,
+            buffer[ip++] = CMD_out;
 ,
             fprintf(outputfile, "%lg\n", POP);
 , 
@@ -170,13 +300,16 @@ DEF_CMD(out, 5,
 )
 
 DEF_CMD(add, 6,
+            buffer[ip++] = CMD_add;
+
 ,
-            PUSH(POP+POP);
+            PUSH(POP + POP);
 , 
             fprintf(new_word_file, "\n");
 )
 
 DEF_CMD(sub, 4, 
+            buffer[ip++] = CMD_sub;
 ,
             PUSH(POP - POP);
 , 
@@ -184,6 +317,7 @@ DEF_CMD(sub, 4,
 )
 
 DEF_CMD(mul, 2,
+            buffer[ip++] = CMD_mul;
 ,
             PUSH(POP * POP);
 , 
@@ -191,10 +325,15 @@ DEF_CMD(mul, 2,
 )
 
 DEF_CMD(div, 7, 
+            buffer[ip++] = CMD_div;
 ,
             a = POP;  b = POP;
 
-            if (b == 0)    ERROR(-1)
+            if (b == 0) 
+            {
+                printf("ERROR IN DIV\n");
+                ERROR(-1)
+            }
 
             PUSH(a / b);
 , 
@@ -202,15 +341,21 @@ DEF_CMD(div, 7,
 )
 
 DEF_CMD(sqrt, 8, 
+            buffer[ip++] = CMD_sqrt;
 ,
             a = POP;
-            if (a < 0)    ERROR(-1)      
+            if (a < 0) 
+            {
+                printf("ERROR IN SQRT\n");
+                ERROR(-1)
+            }      
             PUSH(sqrt(a));
 , 
             fprintf(new_word_file, "\n");
 )
 
 DEF_CMD(hlt, -1, 
+            buffer[ip++] = CMD_hlt;
 ,
             ERROR(0)
 , 
@@ -218,8 +363,14 @@ DEF_CMD(hlt, -1,
 )
 
 DEF_CMD(in, 9, 
+            buffer[ip++] = CMD_in;
 ,
-            if (scanf("%lg", &a) == 0)    ERROR(-1)
+            if (scanf("%lg", &a) == 0) 
+            {   
+                printf("ERROR IN IN\n");
+                ERROR(-1)
+            }
+            //printf("%lg", a);
 
             PUSH(a);
 , 
@@ -227,18 +378,21 @@ DEF_CMD(in, 9,
 )
 
 DEF_CMD(minus, 10, 
+            buffer[ip++] = CMD_minus;
 ,
             PUSH(-POP);
 , 
             fprintf(new_word_file, "\n");
 )
 
+
+
 DEF_CMD(mov, 12, 
 
             int ptr = -1; double a = 0;
             char reg_name[3];
             
-            if (fscanf(inputfile, "%s", reg_name) != 1)
+            if (sscanf(each_str[str_num].str, "%*s%s", reg_name) != 1)
                 return -1;
 
             if (STR_EQUAL (reg_name, "RAX"))
@@ -254,14 +408,20 @@ DEF_CMD(mov, 12,
                 ptr = RDX;
 
             else 
-                ptr = -1;
-    
+            {
+                printf("ERROR IN MOV\n");
+                ERROR(-1)
+            }
+            buffer[ip++] = CMD_mov;
+            CHECK_ERR
             buffer[ip++] = ptr;
 
-            if (fscanf(inputfile, "%lg", &a) != 1)
+            if (sscanf(each_str[str_num].str, "%*s%*s%lg", &a) != 1)
             {
-                return -1; printf("ERROR in MOV\n");
+                printf("ERROR in MOV\n");
+                ERROR(-1)
             }
+            CHECK_ERR
             buffer[ip++] = a;
             
 ,
@@ -289,7 +449,6 @@ DEF_CMD(mov, 12,
 
                         printf("ERROR IN MOV\n");
                         ERROR(-1)
-                        break;
                 };
 ,
                 under_comand = (int) code[ip++];
@@ -313,29 +472,15 @@ DEF_CMD(mov, 12,
                         break;
                     
                     default:
+                        printf("ERROR IN MOV\n");
                         ERROR(-1)
-                        break;
-
+                        
                 }
 
                 PRINTF_TXT("%lg\n", code[ip++])
 )
 
-DEF_CMD(pop, 13,
-,
-            POP;
-, 
-            fprintf(new_word_file, "\n");
-)
 
-/*DEF_CMD(jae, 14,
 
-            if (fscanf(inputfile, "%s", buf) != 1)
-                return -1;
-            
-
-,
-,
-)*/
 
 

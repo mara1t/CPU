@@ -2,7 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include "..//cmd_enum.h"
-#include "..//..//og//ONEGIN//header_og.h"
+#include "header_og.h"
 
 int assemble    (FILE* inputfile, FILE* transfile);
 

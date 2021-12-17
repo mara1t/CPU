@@ -21,8 +21,8 @@ main_asm.o: assembler/main_asm.cpp
 asm.o: assembler/asm.cpp
 	$(CC) -c assembler/asm.cpp
 
-header_og.o: ../og/ONEGIN/header_og.cpp
-	$(CC) -c ../og/ONEGIN/header_og.cpp
+header_og.o: assembler/header_og.cpp
+	$(CC) -c assembler/header_og.cpp
 
 asm_do:
 	./asm_do.exe

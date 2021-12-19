@@ -14,18 +14,14 @@ int assemble(FILE* inputfile, FILE* transfile)
 
     int onegin_size  = File_size(inputfile);
     char *onegin_buf = file_read(onegin_size , inputfile);
-    
     int n_str        = Nstr (onegin_size, onegin_buf);
-  
-    struct Line* each_str = (struct Line*) calloc (n_str, sizeof(*each_str));
+
+    struct Line* each_str = (struct Line*) calloc(n_str, sizeof(struct Line));
 
     line_pointer_len (onegin_size, onegin_buf, each_str);
 
-    onegin_buf[onegin_size] = '\0';
-
     struct labl *labl_mass = (struct labl *) calloc(100, sizeof(struct labl));
     int labl_mass_counter = 0;
-    
 
     for (int pass = 0; pass < 2; pass++)
     {   
@@ -37,7 +33,14 @@ int assemble(FILE* inputfile, FILE* transfile)
             
             if (sscanf(each_str[str_num].str, "%s", buf) != 1)
                 break;
-
+                
+            /*if (*buf == '\0')//buf[0] == '\0')
+            {
+                $$$
+                str_num++;
+                printf("YESSSS");
+                continue;
+            }*/
             
             if (buf[0] == ':' && pass == 0)
             {
@@ -61,7 +64,7 @@ int assemble(FILE* inputfile, FILE* transfile)
             #include "..//cmd_def.h"
             
             {
-                ERROR(-1)
+                break;
             }
             
         }

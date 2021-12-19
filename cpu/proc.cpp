@@ -50,9 +50,7 @@ int Execute(FILE* outputfile, FILE* transfile, int file_size)
             #include "..//cmd_def.h"
             
             default:
-                printf("ip=%d\n", ip);
-                break;
-                //ERROR(-1)
+                ERROR(-1)
         };
     
     }

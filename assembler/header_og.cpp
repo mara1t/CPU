@@ -50,17 +50,29 @@ void line_pointer_len (const int file_size, char *buffer, struct Line* mystr) {
     assert(buffer != NULL && file_size >= 1 && mystr != NULL);
 
     int symb_counter = 0, str = 0, len_counter = 0;
-    for ( str = 0; symb_counter < file_size; str++)
+    for (str = 0; symb_counter < file_size; str++)
     {
+        while ((buffer[symb_counter] == '\n' || buffer[symb_counter] == '\0' || buffer[symb_counter] == '\r') && symb_counter <= file_size)
+        {
+            symb_counter++;
+            
+        }
+        
+        if (symb_counter > file_size)
+        {
+            return;
+        }
+            
         len_counter = 0;
         mystr[str].str = buffer+symb_counter;
 
-        while ( buffer[symb_counter] != '\n' && symb_counter < file_size)
+        
+        while ( buffer[symb_counter] != '\n' && buffer[symb_counter] != '\0' && buffer[symb_counter] != '\r')
         {
             symb_counter++;
             len_counter++;
         }
-
+        
         buffer[symb_counter] = '\0';
         symb_counter++;
         len_counter++;
@@ -76,13 +88,22 @@ int Nstr (const int file_size, const char *buffer) {
 
     for (str_num = 0; symb_num < file_size; str_num++)
     {
-        while (buffer[symb_num] != '\n' && buffer[symb_num] != '\0')
+        while ((buffer[symb_num] == '\n' || buffer[symb_num] == '\r') && symb_num <= file_size)
+        {
+            symb_num++;
+        }
+        if (symb_num > file_size)
+            break;
+
+        while (buffer[symb_num] != '\n' && buffer[symb_num] != '\r' && symb_num < file_size)
             symb_num++;
 
         symb_num++;
+        if (buffer[symb_num] == '\0')
+            break;
     }
    
-    n_str = str_num;
+    n_str = str_num + 1;
     return n_str;
 }
 
@@ -92,11 +113,8 @@ void output_txt (FILE* file_output, const int n_str, const struct Line* mystr) {
 
     for (int str_num = 0; str_num < n_str; str_num++)
     {
-        if (*(mystr[str_num].str) != '\0')
-        {
             fputs(mystr[str_num].str, file_output);
             fprintf(file_output, "\n");
-        }
     }
 
     for (int i = 0; i < 40; i++)

@@ -3,6 +3,13 @@ DEF_FUN(call, 23,
 )
 
 DEF_CMD(ret, 24,
+            char end_symb = 0;
+            sscanf(each_str[str_num].str, "%*s %c", &end_symb);
+            if (end_symb != '\0')
+            {
+                printf("Something is underflow in one string\n");
+                ERROR(-1)   
+            }
             buffer[ip++] = CMD_ret;
 ,
             ip = (int) FUNC_POP;  
@@ -35,6 +42,13 @@ DEF_CMD(push, 1,
             char *ptr_open;
             if (sscanf(each_str[str_num].str, "%*s %lg", &a) == 1)
             {
+                char end_symb = 0;
+                sscanf(each_str[str_num].str, "%*s %*lg %c", &end_symb);
+                if (end_symb != '\0')
+                {
+                    printf("Something is underflow in one string\n");
+                    ERROR(-1)   
+                }
                 buffer[ip++] = CMD_push; 
                 CHECK_ERR
                 buffer[ip++] = a;
@@ -56,6 +70,13 @@ DEF_CMD(push, 1,
                             ERROR(-1)
                         }
                         buffer[ip++] = ram_ip;
+                        char end_symb = 0;
+                        sscanf(each_str[str_num].str, "%*s %*d %*c %c", &end_symb);
+                        if (end_symb != '\0')
+                        {
+                            printf("Something is underflow in one string\n");
+                            ERROR(-1)   
+                        }
                     }
                     else
                         buffer[ip++] = -1;
@@ -85,7 +106,14 @@ DEF_CMD(push, 1,
                     ptr = -1;
                     printf("ERROR IN REGPUSH\n");
                     ERROR(-1)
-                }     
+                }  
+                char end_symb = 0;
+                sscanf(each_str[str_num].str, "%*s %*s %c", &end_symb);
+                if (end_symb != '\0')
+                {
+                    printf("Something is underflow in one string\n");
+                    ERROR(-1)   
+                }
                 buffer[ip++] = CMD_regpush;
                 CHECK_ERR
                 buffer[ip++] = ptr;  
@@ -106,7 +134,6 @@ DEF_CMD(regpush, 11,
             ERROR(-1)
 ,
             constant = code[ip++];
-            $$$
             switch (constant)
             {
                 case RAX:
@@ -181,6 +208,13 @@ DEF_CMD(pop, 3,
                         {
                             ERROR(-1)
                         }
+                        char end_symb = 0;
+                        sscanf(each_str[str_num].str, "%*s %*d %c %c", &end_symb);
+                        if (end_symb != '\0')
+                        {
+                            printf("Something is underflow in one string\n");
+                            ERROR(-1)   
+                        }
                         buffer[ip++] = ram_ip;
                     }
                     else 
@@ -217,14 +251,29 @@ DEF_CMD(pop, 3,
                     ERROR(-1)
                     
                 }
+                char end_symb = 0;
+                sscanf(each_str[str_num].str, "%*s %*s %c", &end_symb);
+                if (end_symb != '\0')
+                {
+                    printf("Something is underflow in one string\n");
+                    ERROR(-1)   
+                }
                 buffer[ip++] = CMD_regpop;
                 CHECK_ERR
                 buffer[ip++] = ptr;
 
             }
             else 
+            {
+                char end_symb = 0;
+                sscanf(each_str[str_num].str, "%*s %c", &end_symb);
+                if (end_symb != '\0')
+                {
+                    printf("Something is underflow in one string\n");
+                    ERROR(-1)   
+                }
                 buffer[ip++] = CMD_pop;
-
+            }
 ,
             POP;
 , 
@@ -292,6 +341,13 @@ DEF_CMD(oppop, 22,
 )
 
 DEF_CMD(out, 5,
+            char end_symb = 0;
+            sscanf(each_str[str_num].str, "%*s %c", &end_symb);
+            if (end_symb != '\0')
+            {
+                printf("Something is underflow in one string\n");
+                ERROR(-1)   
+            }
             buffer[ip++] = CMD_out;
 ,
             fprintf(outputfile, "%lg\n", POP);
@@ -300,6 +356,13 @@ DEF_CMD(out, 5,
 )
 
 DEF_CMD(add, 6,
+            char end_symb = 0;
+            sscanf(each_str[str_num].str, "%*s %c", &end_symb);
+            if (end_symb != '\0')
+            {
+                printf("Something is underflow in one string\n");
+                ERROR(-1)   
+            }
             buffer[ip++] = CMD_add;
 
 ,
@@ -309,6 +372,13 @@ DEF_CMD(add, 6,
 )
 
 DEF_CMD(sub, 4, 
+            char end_symb = 0;
+            sscanf(each_str[str_num].str, "%*s %c", &end_symb);
+            if (end_symb != '\0')
+            {
+                printf("Something is underflow in one string\n");
+                ERROR(-1)   
+            }
             buffer[ip++] = CMD_sub;
 ,
             PUSH(POP - POP);
@@ -317,6 +387,13 @@ DEF_CMD(sub, 4,
 )
 
 DEF_CMD(mul, 2,
+            char end_symb = 0;
+            sscanf(each_str[str_num].str, "%*s %c", &end_symb);
+            if (end_symb != '\0')
+            {
+                printf("Something is underflow in one string\n");
+                ERROR(-1)   
+            }
             buffer[ip++] = CMD_mul;
 ,
             PUSH(POP * POP);
@@ -325,6 +402,13 @@ DEF_CMD(mul, 2,
 )
 
 DEF_CMD(div, 7, 
+            char end_symb = 0;
+            sscanf(each_str[str_num].str, "%*s %c", &end_symb);
+            if (end_symb != '\0')
+            {
+                printf("Something is underflow in one string\n");
+                ERROR(-1)   
+            }
             buffer[ip++] = CMD_div;
 ,
             a = POP;  b = POP;
@@ -341,6 +425,13 @@ DEF_CMD(div, 7,
 )
 
 DEF_CMD(sqrt, 8, 
+            char end_symb = 0;
+            sscanf(each_str[str_num].str, "%*s %c", &end_symb);
+            if (end_symb != '\0')
+            {
+                printf("Something is underflow in one string\n");
+                ERROR(-1)   
+            }
             buffer[ip++] = CMD_sqrt;
 ,
             a = POP;
@@ -355,6 +446,13 @@ DEF_CMD(sqrt, 8,
 )
 
 DEF_CMD(hlt, -1, 
+            char end_symb = 0;
+            sscanf(each_str[str_num].str, "%*s %c", &end_symb);
+            if (end_symb != '\0')
+            {
+                printf("Something is underflow in one string\n");
+                ERROR(-1)   
+            }
             buffer[ip++] = CMD_hlt;
 ,
             ERROR(0)
@@ -363,6 +461,13 @@ DEF_CMD(hlt, -1,
 )
 
 DEF_CMD(in, 9, 
+            char end_symb = 0;
+            sscanf(each_str[str_num].str, "%*s %c", &end_symb);
+            if (end_symb != '\0')
+            {
+                printf("Something is underflow in one string\n");
+                ERROR(-1)   
+            }
             buffer[ip++] = CMD_in;
 ,
             if (scanf("%lg", &a) == 0) 
@@ -378,6 +483,13 @@ DEF_CMD(in, 9,
 )
 
 DEF_CMD(minus, 10, 
+            char end_symb = 0;
+            sscanf(each_str[str_num].str, "%*s %c", &end_symb);
+            if (end_symb != '\0')
+            {
+                printf("Something is underflow in one string\n");
+                ERROR(-1)   
+            }
             buffer[ip++] = CMD_minus;
 ,
             PUSH(-POP);
@@ -420,6 +532,13 @@ DEF_CMD(mov, 12,
             {
                 printf("ERROR in MOV\n");
                 ERROR(-1)
+            }
+            char end_symb = 0;
+            sscanf(each_str[str_num].str, "%*s %*s %*lg %c", &end_symb);
+            if (end_symb != '\0')
+            {
+                printf("Something is underflow in one string\n");
+                ERROR(-1)   
             }
             CHECK_ERR
             buffer[ip++] = a;
@@ -479,8 +598,3 @@ DEF_CMD(mov, 12,
 
                 PRINTF_TXT("%lg\n", code[ip++])
 )
-
-
-
-
-

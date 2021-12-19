@@ -209,7 +209,7 @@ DEF_CMD(pop, 3,
                             ERROR(-1)
                         }
                         char end_symb = 0;
-                        sscanf(each_str[str_num].str, "%*s %*d %c %c", &end_symb);
+                        sscanf(each_str[str_num].str, "%*s %*d %*c %c", &end_symb);
                         if (end_symb != '\0')
                         {
                             printf("Something is underflow in one string\n");

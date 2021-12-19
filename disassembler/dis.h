@@ -33,6 +33,8 @@ int disassemble (FILE* transfile, FILE* new_word_file, const int file_size);
 #define ERROR(a)                                    \
     {                                               \
         free(code);                                 \
+        if (a == -1)                                \
+        printf("ERROR in line %d", __LINE__);       \
         return a;                                   \
     }
 
@@ -41,7 +43,3 @@ int disassemble (FILE* transfile, FILE* new_word_file, const int file_size);
         if (fprintf(new_word_file, d, push) == -1)  \
             ERROR(-1)                               \
     }
-
-
-
-

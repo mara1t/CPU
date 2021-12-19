@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <ctype.h>
 #include "..//cmd_enum.h"
 #include "header_og.h"
 
@@ -19,12 +20,13 @@ struct labl {
 #define STR_EQUAL(buf, push) strcmp(buf, push) == 0
 #define CODE_PRINT(CMD_IN) fprintf(transfile, "%d", CMD_IN)
 
-#define CHECK_ERR            \
-    if (ip >= BASE_BUF_SIZE) \
-        ERROR(-1)            \
+#define CHECK_ERR               \
+    if (ip >= BASE_BUF_SIZE)    \
+        ERROR(-1)               \
 
 #define ERROR(a)                                    \
     {                                               \
+        printf("ERROR in line %d\n", __LINE__);     \
         free(buffer);                               \
         free(buf);                                  \
         return a;                                   \
@@ -55,7 +57,16 @@ struct labl {
                 ERROR(-1)                                                           \
         }                                                                           \
         else if (pass == 0)                                                         \
+        {                                                                           \
+            char end_symb = 0;                                                      \
+            sscanf(each_str[str_num].str, "%*s %*s %c", &end_symb);                 \
+            if (end_symb != '\0')                                                   \
+            {                                                                       \
+                printf("Something is underflow in one string\n");                   \
+                ERROR(-1)                                                           \
+            }                                                                       \
             buffer[ip++] = -1;                                                      \
+        }                                                                           \
                                                                                     \
         ++str_num;                                                                  \
         count = 0;                                                                  \
@@ -87,8 +98,16 @@ struct labl {
                 ERROR(-1)                                                           \
         }                                                                           \
         else if (pass == 0)                                                         \
+        {                                                                           \
+            char end_symb = 0;                                                      \
+            sscanf(each_str[str_num].str, "%*s %*s %c", &end_symb);                 \
+            if (end_symb != '\0')                                                   \
+            {                                                                       \
+                printf("Something is underflow in one string\n");                   \
+                ERROR(-1)                                                           \
+            }                                                                       \
             buffer[ip++] = -1;                                                      \
-                                                                                    \
+        }                                                                           \
         ++str_num;                                                                  \
         count = 0;                                                                  \
     }                                                                               \

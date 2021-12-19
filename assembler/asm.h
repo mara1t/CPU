@@ -26,6 +26,7 @@ struct labl {
 
 #define ERROR(a)                                    \
     {                                               \
+        if (a == -1)                                \
         printf("ERROR in line %d\n", __LINE__);     \
         free(buffer);                               \
         free(buf);                                  \

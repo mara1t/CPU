@@ -26,6 +26,8 @@ int Execute     (FILE* outputfile, FILE* transfile, int file_size);
 
 #define ERROR(a)                                    \
         free(code);                                 \
+        if (a == -1)                                \
+            printf("ERROR in line %d\n", __LINE__); \
         return a;
 
 #define DEF_FUN(name, num, argcp)                   \
